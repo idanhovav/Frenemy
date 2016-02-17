@@ -32,8 +32,19 @@ public class MatrixCreator {
 		}
 		return 'E';
 	}
+
+	public static String createRelation(int n) {
+		Random gen = new Random();
+		String result = "";
+		for(int result_i = 0; result_i < n; result_i++) {
+			result += friendOrFoe(gen.nextInt(2));
+		}
+		return result;
+	}
+
 	public static void main(String[] args) {
-		int _n = Integer.parseInt(args[0]);
-		makeMatrix(_n);
+		int n = Integer.parseInt(args[0]);
+		makeMatrix(n);
+		createRelation(n);
 	}
 }
