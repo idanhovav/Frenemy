@@ -82,20 +82,28 @@ public class Solution {
 		int regResult;
 		int recResult;
 
-		long startRegTime = System.nanoTime();
-		regResult = isFrenemy(n, frenemy, x, y, relation);
-		long endRegTime = System.nanoTime();
-		double totalRegTime = (endRegTime - startRegTime) / 1000000;
+		try {
+			long startRegTime = System.nanoTime();
+			regResult = isFrenemy(n, frenemy, x, y, relation);
+			long endRegTime = System.nanoTime();
+			double totalRegTime = (endRegTime - startRegTime) / 1000000;
 
-		System.out.println("Regular  : " + regResult + " | Time: " + totalRegTime);
+			System.out.println("Regular  : " + regResult + " | Time: " + totalRegTime);
+		}
+		catch(StackOverflowError e) {
+			System.out.println("Regular version failed.");
+		}
 
-
-		long startRecTime = System.nanoTime();
-		recResult = isFrenemyRecursive(n, frenemy, x, y, relation);
-		long endRecTime = System.nanoTime();
-		double totalRecTime = (endRecTime - startRecTime) / 1000000;
-
-		System.out.println("Recursive: " + recResult + " | Time: " + totalRecTime);
+		try {
+			long startRecTime = System.nanoTime();
+			recResult = isFrenemyRecursive(n, frenemy, x, y, relation);
+			long endRecTime = System.nanoTime();
+			double totalRecTime = (endRecTime - startRecTime) / 1000000;
+			System.out.println("Recursive: " + recResult + " | Time: " + totalRecTime);
+		}
+		catch(StackOverflowError e) {
+			System.out.println("Recursive version failed.");
+		}
 
 	}
 }
