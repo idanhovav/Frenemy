@@ -42,11 +42,13 @@ public class Solution {
 		System.arraycopy(backs, 0, confirmedBacks, 0, back);
 		System.arraycopy(fronts, 0, confirmedFronts, 0, front);
 
+		String newRelation = relation.substring(1, relation.length()-1);
+
 		for(int confirmed_fronts_i = 0; confirmed_fronts_i < front; confirmed_fronts_i++) {
 			for(int confirmed_backs_j = 0; confirmed_backs_j < back; confirmed_backs_j++) {
-				String check = relation.substring(1, relation.length()-1);
+
 				if(isFrenemy(n, frenemy, confirmedFronts[confirmed_fronts_i], 
-					confirmedBacks[confirmed_backs_j], check) == 1) {
+					confirmedBacks[confirmed_backs_j], newRelation) == 1) {
 					return 1;
 				}
 			}
@@ -55,6 +57,25 @@ public class Solution {
 	}
 
 	public static void main(String[] args) throws IOException {
+		MatrixCreator mc = new MatrixCreator();
+		int args_index = 0;
+		int n = Integer.parseInt(args[args_index++]);
+		String[] frenemy = mc.makeMatrix(n);
+
+		int x = Integer.parseInt(args[args_index++]);
+		int y = Integer.parseInt(args[args_index++]);
+		String relation = args[args_index++];
+		int res;
+		res = isFrenemy(n, frenemy, x, y, relation);
+
+		System.out.println(x + " ---> " + y + " through " + relation);
+		for(int frenemy_i = 0; frenemy_i < frenemy.length; frenemy_i++) {
+			System.out.println(frenemy[frenemy_i]);
+		}
+
+		System.out.println("\n" + res);
+
+		/*
 		int _args_index = 0;
 		int _n = Integer.parseInt(args[_args_index++]);
 		int _frenemy_size = _n;
@@ -76,7 +97,7 @@ public class Solution {
 
 		res = isFrenemy(_n, _frenemy, _x, _y, _relation);
 		System.out.println(res);
-
+		*/
 
 		/* Their way
 		Scanner in = new Scanner(System.in);
