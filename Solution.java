@@ -5,9 +5,7 @@ import java.math.*;
 import java.util.regex.*;
 
 public class Solution {
-	
 	static int isFrenemy(int n, String[] frenemy, int x, int y, String relation) {
-		//base cases
 		if(relation.length() == 0) {
 			if(x == y) {
 				return 1;
@@ -22,9 +20,9 @@ public class Solution {
 		}
 
 		for(int front_i = 0; front_i < frenemy.length; front_i++) {
-			for(int back_i = 0; back_i < frenemy.length; back_i++) {
-
-				if(frenemy[x].charAt(front_i) == relation.charAt(0)) {
+			if(frenemy[x].charAt(front_i) == relation.charAt(0)) {
+				
+				for(int back_i = 0; back_i < frenemy.length; back_i++) {
 					if(frenemy[y].charAt(back_i) == relation.charAt(relation.length()-1)) {
 
 						if(isFrenemy(n, frenemy, front_i, back_i,
@@ -38,7 +36,6 @@ public class Solution {
 			}
 		}
 		return 0;
-
 		/*
 		int[] backs = new int[n];
 		int[] fronts = new int[n];
@@ -75,6 +72,7 @@ public class Solution {
 		return 0;
 		*/
 	}
+
 	static int isFrenemyRecursive(int n, String[] frenemy, int x, int y, String relation) {
 		if(relation.length() == 0) {
 			if(x == y) {
@@ -103,12 +101,19 @@ public class Solution {
 		int relation_length = Integer.parseInt(args[args_index++]);
 		String relation = mc.createRelation(relation_length);
 
-		System.out.println(x + " ---> " + y + " through " + relation);
-		for(int frenemy_i = 0; frenemy_i < frenemy.length; frenemy_i++) {
-			System.out.println(frenemy[frenemy_i]);
+		if(relation.length() < 10) {
+			System.out.println(x + " ---> " + y + " through " + relation);
+		}
+		else {
+			System.out.println("Running...");
 		}
 
-				
+		if(n < 20) {
+			for(int frenemy_i = 0; frenemy_i < frenemy.length; frenemy_i++) {
+				System.out.println(frenemy[frenemy_i]);
+			}
+		}
+
 		int regResult;
 		int recResult;
 
@@ -117,7 +122,7 @@ public class Solution {
 		long endRegTime = System.nanoTime();
 		double totalRegTime = (endRegTime - startRegTime) / 1000000;
 
-		System.out.println("Regular: " + regResult + " | Time: " + totalRegTime);
+		System.out.println("Regular  : " + regResult + " | Time: " + totalRegTime);
 
 
 		long startRecTime = System.nanoTime();
