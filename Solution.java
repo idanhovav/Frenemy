@@ -3,7 +3,17 @@ import java.util.*;
 import java.text.*;
 import java.math.*;
 import java.util.regex.*;
+import java.util.Set;
+import java.util.HashSet;
 
+/*
+n is number of people
+frenemy is relation matrix
+x is starting person's index
+y is ending person's index
+relation is the sequence of relations from x to y.
+Return 1 if the relation reaches y from x, 0 if not.
+*/
 public class Solution {
 	static int isFrenemy(int n, String[] frenemy, int x, int y, String relation) {
 		if(relation.length() == 0) {
@@ -37,7 +47,6 @@ public class Solution {
 		}
 		return 0;
 	}
-
 	static int isFrenemyRecursive(int n, String[] frenemy, int x, int y, String relation) {
 		if(relation.length() == 0) {
 			if(x == y) {
@@ -55,6 +64,47 @@ public class Solution {
 		}
 		return 0;
 	}
+	static int isFrenemyNewApproach(int n, String[] frenemy, int x, int y, String relation) {
+		HashSet<Integer> adjacencies = adjacenciesFinder(frenemy[x], relation.charAt(0));
+		for (int relation_i = 1; relation_i < relation.length(); relation_i++) { // 1 b/c last one already done.
+			adjacencies = adjacenciesUpdater(adjacencies, frenemy, relation.charAt(relation_i));
+		}
+		boolean success = adjacencies.contains(y);
+		if (success) return 1;
+		return 0;
+	}
+	/* Returns a set of all the people connected to any person in the given set.
+	Since it is returning a set, repeats are not allowed, cutting down on complexity.
+	*/
+	private static HashSet<Integer> adjacenciesUpdater(HashSet<Integer> adjacencies, String[] frenemy, char relation) {
+		HashSet<Integer> newAdjacencies = new HashSet<Integer>();
+		for (int adjacentPerson : adjacencies) {
+			newAdjacencies.addAll(adjacenciesFinder(frenemy[adjacentPerson], relation));
+		}
+		return newAdjacencies;
+	}
+	/* Returns a set of all the people connected to a specific person by the given relation.
+	frenemy: relationships of specific person
+	relation: relation desired.
+	*/
+	private static HashSet<Integer> adjacenciesFinder(String frenemy, char relation) {
+		HashSet<Integer> adjPeople = new HashSet<Integer>();
+		for (int frenemy_i = 0; frenemy_i < frenemy.length(); frenemy_i++) {
+			if (frenemy.charAt(frenemy_i) == relation) {
+				adjPeople.add(frenemy_i);
+			}
+		}
+		return adjPeople;
+	}
+
+	/*
+	Pass in as command line arguments in the following order:
+	- number of people in the simulation.
+	- index of starting person.
+	- index of ending person.
+	- length of relationship chain desired.
+	Index starting at 0 for people because we are Computer Scientists.
+	*/
 	public static void main(String[] args) throws IOException {
 		MatrixCreator mc = new MatrixCreator();
 		int args_index = 0;
@@ -63,6 +113,10 @@ public class Solution {
 
 		int x = Integer.parseInt(args[args_index++]);
 		int y = Integer.parseInt(args[args_index++]);
+		if (x < 0 || y < 0 || x >= n || y >= n) {
+			System.out.println("Invalid index given. Indices must be within range [0, " + n + ") for the given inputs.");
+			System.exit(0);
+		}
 		int relation_length = Integer.parseInt(args[args_index++]);
 		String relation = mc.createRelation(relation_length);
 
@@ -81,6 +135,7 @@ public class Solution {
 
 		int regResult;
 		int recResult;
+		int newResult;
 
 		try {
 			long startRegTime = System.nanoTime();
@@ -103,6 +158,17 @@ public class Solution {
 		}
 		catch(StackOverflowError e) {
 			System.out.println("Recursive version failed.");
+		}
+
+		try {
+			long startNewTime = System.nanoTime();
+			newResult = isFrenemyNewApproach(n, frenemy, x, y, relation);
+			long endNewTime = System.nanoTime();
+			double totalNewTime = (endNewTime - startNewTime) / 1000000;
+			System.out.println("New: " + newResult + " | Time: " + totalNewTime);
+		}
+		catch(StackOverflowError e) {
+			System.out.println("New version failed.");
 		}
 
 	}
