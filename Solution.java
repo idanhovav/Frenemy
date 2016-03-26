@@ -18,6 +18,15 @@ import java.util.HashSet;
 * relation is the sequence of relations from x to y.
 * Return 1 if the relation reaches y from x, 0 if not.
 */
+
+
+
+/* TODO:
+- for new approach:
+  - if the set cardinality == N, then no need to keep updating b/c all people are 
+  already in the set.
+
+*/
 public class Solution {
 	static int isFrenemy(int n, String[] frenemy, int x, int y, String relation) {
 		if (relation.length() == 0) {
