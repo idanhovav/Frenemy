@@ -6,36 +6,40 @@ import java.util.regex.*;
 import java.util.Set;
 import java.util.HashSet;
 
+/* Findings: Reg and Recursive fail at 10,000 1 2 10,000
+*/
+
+
 /*
-n is number of people
-frenemy is relation matrix
-x is starting person's index
-y is ending person's index
-relation is the sequence of relations from x to y.
-Return 1 if the relation reaches y from x, 0 if not.
+* n is number of people
+* frenemy is relation matrix
+* x is starting person's index
+* y is ending person's index
+* relation is the sequence of relations from x to y.
+* Return 1 if the relation reaches y from x, 0 if not.
 */
 public class Solution {
 	static int isFrenemy(int n, String[] frenemy, int x, int y, String relation) {
-		if(relation.length() == 0) {
+		if (relation.length() == 0) {
 			if(x == y) {
 				return 1;
 			}
 			return 0;
 		}
-		if(relation.length() == 1) {
-			if(frenemy[x].charAt(y) == relation.charAt(0)) {
+		if (relation.length() == 1) {
+			if (frenemy[x].charAt(y) == relation.charAt(0)) {
 				return 1;
 			}
 			return 0;
 		}
 
-		for(int front_i = 0; front_i < frenemy.length; front_i++) {
-			if(frenemy[x].charAt(front_i) == relation.charAt(0)) {
+		for (int front_i = 0; front_i < frenemy.length; front_i++) {
+			if (frenemy[x].charAt(front_i) == relation.charAt(0)) {
 				
-				for(int back_i = 0; back_i < frenemy.length; back_i++) {
-					if(frenemy[y].charAt(back_i) == relation.charAt(relation.length()-1)) {
+				for (int back_i = 0; back_i < frenemy.length; back_i++) {
+					if (frenemy[y].charAt(back_i) == relation.charAt(relation.length()-1)) {
 
-						if(isFrenemy(n, frenemy, front_i, back_i,
+						if (isFrenemy(n, frenemy, front_i, back_i,
 							relation.substring(1, relation.length()-1)) == 1) {
 							return 1;
 						}
@@ -48,53 +52,66 @@ public class Solution {
 		return 0;
 	}
 	static int isFrenemyRecursive(int n, String[] frenemy, int x, int y, String relation) {
-		if(relation.length() == 0) {
+		if (relation.length() == 0) {
 			if(x == y) {
 				return 1;
 			}
 			return 0;
 		} 
 
-		for(int frenemy_i = 0; frenemy_i < frenemy.length; frenemy_i++) {
-			if(frenemy[x].charAt(frenemy_i) == relation.charAt(0)) {
-				if(isFrenemyRecursive(n, frenemy, frenemy_i, y, relation.substring(1)) == 1) {
+		for (int frenemy_i = 0; frenemy_i < frenemy.length; frenemy_i++) {
+			if (frenemy[x].charAt(frenemy_i) == relation.charAt(0)) {
+				if (isFrenemyRecursive(n, frenemy, frenemy_i, y, relation.substring(1)) == 1) {
 					return 1;
 				}
 			}
 		}
 		return 0;
 	}
+	/* Theoretically sound, issue is that in the worst case is O(N^2).
+	*
+	* Idea is to keep a set of people adjacent to first person. 
+	* Keep updating this set based on new adjacencies from last round.
+	* Keep going for each relation in relationship chain.
+	* In the end, check if the last person is in the final set of adjacencies.
+	*/
 	static int isFrenemyNewApproach(int n, String[] frenemy, int x, int y, String relation) {
-		HashSet<Integer> adjacencies = adjacenciesFinder(frenemy[x], relation.charAt(0));
-		for (int relation_i = 1; relation_i < relation.length(); relation_i++) { // 1 b/c last one already done.
-			adjacencies = adjacenciesUpdater(adjacencies, frenemy, relation.charAt(relation_i));
+		HashSet<Integer> adjacencies = new HashSet<Integer>();
+		adjacencies.add(x);
+		for (int relation_i = 0; relation_i < relation.length(); relation_i++) {
+			char friendorfoe = relation.charAt(relation_i);
+			// for debugging purposes.
+			/*if (relation_i % 10 == 0) {
+				System.out.println(friendorfoe);
+			} else {
+				System.out.print(friendorfoe);
+			}*/
+			adjacencies = adjacenciesUpdater(adjacencies, frenemy, friendorfoe);
 		}
 		boolean success = adjacencies.contains(y);
 		if (success) return 1;
 		return 0;
 	}
 	/* Returns a set of all the people connected to any person in the given set.
-	Since it is returning a set, repeats are not allowed, cutting down on complexity.
+	* Since it is returning a set, repeats are not allowed, cutting down on complexity.
 	*/
 	private static HashSet<Integer> adjacenciesUpdater(HashSet<Integer> adjacencies, String[] frenemy, char relation) {
 		HashSet<Integer> newAdjacencies = new HashSet<Integer>();
 		for (int adjacentPerson : adjacencies) {
-			newAdjacencies.addAll(adjacenciesFinder(frenemy[adjacentPerson], relation));
+			adjacenciesFinder(newAdjacencies, frenemy[adjacentPerson], relation);
 		}
 		return newAdjacencies;
 	}
 	/* Returns a set of all the people connected to a specific person by the given relation.
-	frenemy: relationships of specific person
-	relation: relation desired.
+	* frenemy: relationships of specific person
+	* relation: relation desired.
 	*/
-	private static HashSet<Integer> adjacenciesFinder(String frenemy, char relation) {
-		HashSet<Integer> adjPeople = new HashSet<Integer>();
+	private static void adjacenciesFinder(HashSet<Integer> adjacencies, String frenemy, char relation) {
 		for (int frenemy_i = 0; frenemy_i < frenemy.length(); frenemy_i++) {
 			if (frenemy.charAt(frenemy_i) == relation) {
-				adjPeople.add(frenemy_i);
+				adjacencies.add(frenemy_i);
 			}
 		}
-		return adjPeople;
 	}
 
 	/*
@@ -136,7 +153,7 @@ public class Solution {
 		int regResult;
 		int recResult;
 		int newResult;
-
+		
 		try {
 			long startRegTime = System.nanoTime();
 			regResult = isFrenemy(n, frenemy, x, y, relation);
@@ -159,7 +176,7 @@ public class Solution {
 		catch(StackOverflowError e) {
 			System.out.println("Recursive version failed.");
 		}
-
+		
 		try {
 			long startNewTime = System.nanoTime();
 			newResult = isFrenemyNewApproach(n, frenemy, x, y, relation);
